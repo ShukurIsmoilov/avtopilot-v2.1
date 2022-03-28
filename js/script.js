@@ -22,11 +22,13 @@ function move(coeff, steps) {
 }
 
 function wayIsClear(coeff, steps) {
-    for (let i = steps; i > 0; i--) {
-        if (i * coeff + carLocation > 15 || i * coeff + carLocation < 0) {
-            return false;
-        }
-        if (i * coeff + carLocation === 8 || i * coeff + carLocation === 9 || i * coeff + carLocation === 11) {
+    if (steps * coeff + carLocation > 15 || steps * coeff + carLocation < 0) {
+        return false;
+    }
+    if (Math.abs(coeff) === 1 && Math.floor(carLocation / 4) !== (Math.floor((carLocation + steps) / 4))) {
+        return false;
+    }
+    if (steps * coeff + carLocation === 8 || steps * coeff + carLocation === 9 || steps * coeff + carLocation === 11) {
             return false;
         }
     }
@@ -86,7 +88,7 @@ function readCommand() {
                     }
                 } else {
                     inputsArray[inputNumber].classList.remove("wrong-command");
-                    alert("Error, there is obstacle or car is on the edge! Try another direction.");
+                    alert("Error, car can not take that step! Try another direction.");
                 }
             }
         }
