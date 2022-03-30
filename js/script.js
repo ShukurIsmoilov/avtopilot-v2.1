@@ -1,4 +1,4 @@
-//Selectingarray of squares
+//Selecting array of squares
 const divsNodeList = document.querySelectorAll("div");
 const divsArray = Array.prototype.slice.call(divsNodeList);
 const squaresArray = divsArray.slice(2, 18);
