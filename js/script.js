@@ -1,4 +1,4 @@
-//Selecting array of squares
+//Selectingarray of squares
 const divsNodeList = document.querySelectorAll("div");
 const divsArray = Array.prototype.slice.call(divsNodeList);
 const squaresArray = divsArray.slice(2, 18);
@@ -14,27 +14,31 @@ const runButton = document.querySelector(".btn-run");
 let carLocation = 0;
 let inputNumber = 0;
 
-
 function move(coeff, steps) {
     squaresArray[carLocation].classList.remove("car");
     carLocation += coeff * steps;
     squaresArray[carLocation].classList.add("car");
 }
 
-function wayIsClear(coeff, steps) {
-    if (steps * coeff + carLocation > 15 || steps * coeff + carLocation < 0) {
-        return false;
-    }
-    if (Math.abs(coeff) === 1 && Math.floor(carLocation / 4) !== (Math.floor((carLocation + steps) / 4))) {
-        return false;
-    }
-    if (steps * coeff + carLocation === 8 || steps * coeff + carLocation === 9 || steps * coeff + carLocation === 11) {
-            return false;
-        }
-    }
-    return true;
-}
+function wayIsClear(coeff, steps, carLocation) {
+    let wayIsClearAndThereIsNoObstacle = true;
+    let moveStep = steps * coeff + carLocation;
 
+    if (moveStep > -1 && moveStep < 16) { // top and bottom edge
+        for (let i = 1; i <= steps; i++) { 
+            moveStep = i * coeff + carLocation;
+            if (Math.abs(coeff) === 1 && Math.floor(carLocation / 4) !== (Math.floor(moveStep / 4))) {
+                wayIsClearAndThereIsNoObstacle = false;
+            } // right and left edge
+            if (moveStep === 8 || moveStep === 9 || moveStep === 11) {
+                wayIsClearAndThereIsNoObstacle = false;
+            } // obstacles          
+        }
+    } else {
+        wayIsClearAndThereIsNoObstacle = false;
+    } // forward and backwards
+    return wayIsClearAndThereIsNoObstacle;
+}
 
 function readCommand() {
     inputsArray[inputNumber].value = inputsArray[inputNumber].value.trim();
@@ -69,23 +73,23 @@ function readCommand() {
                         coeff = -1;
                         break;
                 }
-                if (wayIsClear(coeff, steps)) {
+                if (wayIsClear(coeff, steps, carLocation)) {
                     move(coeff, steps);
                     inputsArray[inputNumber].disabled = true;
                     inputsArray[inputNumber].classList.remove("wrong-command");
                     inputsArray[inputNumber].classList.add("correct-command");
                     inputNumber++;
+                    if (carLocation === 12) {
+                        runButton.disabled = true;
+                        runButton.innerText = "🎉Congrats, you did it!🎉";
+                        alert("🎉🏁🎌Hooorray!🎉🏁🎌");
+                    }
                     if (inputNumber === 8 && carLocation !== 12) {
                         alert("Ooooopps, you ran out of lines, give it another try ;)");
                         location.reload();
                     }
                     inputsArray[inputNumber].removeAttribute("disabled");
-                    if (carLocation === 12) {
-                        inputsArray[inputNumber].value="🎉🏁🎌Hooorray!🎉🏁🎌"
-                        inputsArray[inputNumber].disabled=true;
-                        runButton.disabled=true;
-                        runButton.innerText="🎉Congrats, you did it!🎉"          
-                    }
+
                 } else {
                     inputsArray[inputNumber].classList.remove("wrong-command");
                     alert("Error, car can not take that step! Try another direction.");
